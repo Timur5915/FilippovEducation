@@ -20,5 +20,9 @@ AppState reducer(AppState prevState, dynamic action) {
     newState.faq = action.faq;
   }
 
+  if (action is SaveModulesAction) {
+    newState.modules = action.modules;
+  }
+
   return newState;
 }

@@ -24,10 +24,14 @@ class Themes {
   final int id;
   final List<Block> blocks;
   final List<Question> questions;
+  final List<WorkersQuestion> workerQuestion;
+  final List<WorkersBlock> workersBlock;
   Themes({
     this.id,
+    this.workerQuestion,
     this.name,
     this.blocks,
+    this.workersBlock,
     this.questions,
   });
 }
@@ -47,6 +51,18 @@ class Question {
   final String question;
   final String variants;
   Question({this.answerId, this.variants, this.question});
+}
+
+class WorkersQuestion {
+  final String login;
+  final int grade;
+  final List<String> answers;
+  WorkersQuestion({this.login, this.answers, this.grade});
+}
+
+class WorkersBlock {
+  final String login;
+  WorkersBlock({this.login});
 }
 
 class _ThemeListScreenState extends State<ThemeListScreen> {

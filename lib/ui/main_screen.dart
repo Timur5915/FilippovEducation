@@ -1,7 +1,10 @@
+import 'package:education/actions.dart';
 import 'package:education/appstate.dart';
 import 'package:education/data/news.dart';
 import 'package:education/ui/news/add_news.dart';
 import 'package:education/ui/news/detailsNews.dart';
+import 'package:education/ui/themes/listOfModules.dart';
+import 'package:education/ui/themes/listOfThemes.dart';
 import 'package:education/ui/widgets/sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -52,11 +55,111 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  List<Themes> getThemes(List<dynamic> themes) {
+    var th = List<Themes>();
+    if (themes != null) {
+      for (final theme in themes) {
+        th.add(Themes(
+            id: theme['id'],
+            name: theme['name'],
+            blocks: getBlocks(theme['blocks']),
+            workerQuestion: getWorkersQuestion(theme['workersQuestion']),
+            workersBlock: getWorkersBlock(theme['workersBlock']),
+            questions: getQuestions(theme['questions'])));
+      }
+    } else {
+      return th;
+    }
+    return th;
+  }
+
+  List<Block> getBlocks(List<dynamic> blocks) {
+    var th = List<Block>();
+    if (blocks != null) {
+      for (final block in blocks) {
+        th.add(Block(info: block['info'], type: block['type']));
+      }
+    }
+    return th;
+  }
+
+  List<WorkersBlock> getWorkersBlock(List<dynamic> blocks) {
+    var th = List<WorkersBlock>();
+    if (blocks != null) {
+      for (final block in blocks) {
+        th.add(WorkersBlock(login: block['login']));
+      }
+    }
+    return th;
+  }
+
+  List<WorkersQuestion> getWorkersQuestion(List<dynamic> blocks) {
+    var th = List<WorkersQuestion>();
+    if (blocks != null) {
+      for (final block in blocks) {
+        th.add(WorkersQuestion(
+            login: block['login'],
+            answers: getAnswers(block['answers']),
+            grade: block['grade']));
+      }
+    }
+    return th;
+  }
+
+  List<String> getAnswers(List<dynamic> blocks) {
+    var th = List<String>();
+    if (blocks != null) {
+      for (final block in blocks) {
+        th.add(block);
+      }
+    }
+    return th;
+  }
+
+  List<Question> getQuestions(List<dynamic> questions) {
+    var th = List<Question>();
+    if (questions != null) {
+      for (final question in questions) {
+        th.add(Question(
+            answerId: question['answerId'],
+            question: question['question'],
+            variants: question['variants']));
+      }
+    } else {
+      return th;
+    }
+    return th;
+  }
+
+  void getModules() {
+    final databaseReference = FirebaseDatabase.instance.reference();
+    databaseReference.child('modules').once().then((DataSnapshot snapshot) {
+      if (snapshot.value != null) {
+        var modules = new List<Module>();
+        for (int i = 0; i < snapshot.value.length; i++) {
+          modules.add(
+            new Module(
+              id: int.parse(snapshot.value[i]['id']),
+              name: snapshot.value[i]['name'],
+              themes: getThemes(snapshot.value[i]['themes']),
+            ),
+          );
+        }
+        print(modules);
+        StoreProvider.of<AppState>(context)
+            .dispatch(SaveModulesAction(modules));
+        return;
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     getData();
+
     update = true;
+    getModules();
     super.initState();
   }
 
