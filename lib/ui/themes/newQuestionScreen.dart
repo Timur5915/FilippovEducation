@@ -93,23 +93,28 @@ class _NewQuestionScreenState extends State<NewQuestionScreen> {
       snapshot.value != null
           ? indexUser = snapshot.value.length
           : indexUser = 0;
-      if (snapshot.value != null) {
+      /* if (snapshot.value != null) {
         for (int i = 0; i < snapshot.value.length; i++) {
           if (snapshot.value[i]['login'] == login) {
             indexUser = null;
             return;
           }
         }
-      }
+      }*/
     });
   }
 
   void watched(String id) {
-    if (indexUser == null) return;
+    // if (indexUser == null) return;
     databaseReference
         .child(
             "modules/${widget.module.id}/themes/${widget.theme.id}/workersQuestion/$indexUser")
-        .set({'login': id, 'answers': answers, 'grade': getGrade()});
+        .set({
+      'login': id,
+      'answers': answers,
+      'grade': getGrade(),
+      'timestamp': DateTime.now().toString()
+    });
   }
 
   int getGrade() {
